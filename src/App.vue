@@ -5,17 +5,17 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="Your POW amoun">
-          <el-input v-model.number="account.pow"></el-input>
+          <el-input v-model.number="account.pow" disabled></el-input>
         </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="DAPP POW amount">
-          <el-input v-model.number="contract.currentSupply.number"></el-input>
+          <el-input v-model.number="contract.currentSupply.number" disabled></el-input>
         </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="contract EOS amount">
-          <el-input v-model.number="contract.eos"></el-input>
+          <el-input v-model.number="contract.eos" disabled></el-input>
         </el-form-item>
           </el-col>
         </el-row>
