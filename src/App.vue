@@ -27,7 +27,7 @@
       <el-col :span="6"> <el-button @click.stop.prevent="recalculateAmounts(1000)">Add 1,000 EOS</el-button></el-col>
       <el-col :span="6"><el-button @click.stop.prevent="recalculateAmounts(10000)">Add 10,000 EOS</el-button></el-col>
       <el-col :span="6"><el-button @click.stop.prevent="recalculateAmounts(100000)">Add 100,000 EOS</el-button></el-col>
-      <el-col :span="6"><el-input v-model.number="extra.eos" @blur="recalculateAmounts(extra.eos)"></el-input></el-col>
+      <el-col :span="6"><el-input v-model.number="extra.eos" @blur="recalculateAmounts(extra.eos)" placeholder="on blur recalculation"></el-input></el-col>
   </el-row>
    <br>
 
