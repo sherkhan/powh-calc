@@ -23,11 +23,21 @@
     </div>
 
 
-  <el-row :gutter="20">
+  <div>
+    <el-row :gutter="20">
       <el-col :span="6"> <el-button @click.stop.prevent="recalculateAmounts(1000)">Add 1,000 EOS</el-button></el-col>
       <el-col :span="6"><el-button @click.stop.prevent="recalculateAmounts(10000)">Add 10,000 EOS</el-button></el-col>
       <el-col :span="6"><el-button @click.stop.prevent="recalculateAmounts(100000)">Add 100,000 EOS</el-button></el-col>
       <el-col :span="6"><el-input v-model.number="extra.eos" @blur="recalculateAmounts(extra.eos)" placeholder="on blur recalculation"></el-input></el-col>
+  </el-row>
+
+  </div>
+  <br>
+  <el-row :gutter="20">
+      <el-col :span="6"><el-button @click.stop.prevent="autoRecalculation(1000000)">Auto untill 1kk</el-button></el-col>
+      <el-col :span="6"><el-button @click.stop.prevent="autoRecalculation(3000000)">Auto untill 3kk</el-button></el-col>
+      <el-col :span="6"><el-button @click.stop.prevent="autoRecalculation(5000000)">Auto untill 5kk</el-button></el-col>
+      <el-col :span="6"><el-button @click.stop.prevent="autoRecalculation(8000000)">Auto untill 8kk</el-button></el-col>
   </el-row>
    <br>
 
@@ -81,6 +91,14 @@
           {{yourPowPersentage}} %
         </div>
       </el-card>
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span>Your EOS amount after sell</span>
+        </div>
+        <div  class="text item">
+          {{(price.sell * account.pow).toFixed(5)}}
+        </div>
+      </el-card>
       </el-col>
       <el-col :span="6">
         <el-card class="box-card">
@@ -103,7 +121,7 @@ import _get from 'lodash/get'
 import _head from 'lodash/head'
 import _sum from 'lodash/sum'
 
-const URL = 'https://public.eosinfra.io/v1/chain/get_table_rows'
+const URL = 'https://eosapi.blockmatrix.network/v1/chain/get_table_rows'
 
 const requester = {
   contract: JSON.stringify({json: true, code:'powhcontract', table: 'stat', scope:'POW'}),
@@ -150,13 +168,23 @@ export default {
       let allCoins = this.contract && this.contract.maxSupply ? parseFloat(_head(this.contract.maxSupply.split(' '))) : 0
       let supply = this.contract.currentSupply.number
      
-      return (((0.001 * allCoins) / Math.pow(10,8)) + (0.0001 * (supply / (allCoins/10000)))).toFixed(8)
+      return (((0.001 * allCoins) / Math.pow(10,8)) + (0.0001 * (supply / (allCoins/10000))))
     },
   },
   methods: {
+    getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min) ) + min;
+    },
+
+    autoRecalculation (summ) {
+      while(this.contract.eos < parseFloat(summ)){
+        let invest = this.getRndInteger(10,500);
+          this.recalculateAmounts(invest)
+      }
+    },
     calculatePrice (supply, maxSupply) {
       let allCoins = _head(maxSupply.split(' '))
-      let initialPrice = (((0.001 * allCoins) / Math.pow(10,8)) + (0.0001 * (supply / (allCoins/10000)))).toFixed(8)
+      let initialPrice = (((0.001 * allCoins) / Math.pow(10,8)) + (0.0001 * (supply / (allCoins/10000))))
       initialPrice = parseFloat(initialPrice)
       return {
         buy: initialPrice + (initialPrice / 10),
@@ -195,10 +223,12 @@ export default {
     }
   },
   async mounted () {
-    for (let item in requester) {
+    setTimeout(async () => {
+      for (let item in requester) {
       await this.getBlockData(item, requester[item])
     }
     this.price = Object.assign({}, this.price, await this.calculatePrice(this.contract.currentSupply.number, this.contract.maxSupply))
+    }, 500)
     
   }
 }
