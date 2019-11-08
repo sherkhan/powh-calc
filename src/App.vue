@@ -202,7 +202,7 @@ export default {
       return 
     },
     addDividends (amount) {
-        this.extra.dividends = this.extra.dividends + (((amount / 10) * this.yourPowPersentage) / 100)
+        this.extra.dividends = this.extra.dividends + ((((amount / 100) * 7) * this.yourPowPersentage) / 100)
     },
     async requestBlockData (params) {
       return await this.axios.post(URL, params)
