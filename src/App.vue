@@ -217,12 +217,12 @@ export default {
         friends: 10,
         min: 100,
         max: 1000,
-        amout: null,
-        pow: null,
-        price: null,
-        refs: null,
-        dividends: null,
-        persantage: null
+        amout: 0,
+        pow: 0,
+        price: 0,
+        refs: 0,
+        dividends: 0,
+        persantage: 0
       },
       friend: [],
       price: {
@@ -305,9 +305,6 @@ export default {
       this.recalculateAmounts(alice.amount)
       this.calculateAlicesFriendsTransactions(this.friends)
       this.showFriendsDep = true
-      
-
-      
     },
 
     autoRecalculation (summ) {
@@ -339,7 +336,7 @@ export default {
         this.extra.dividends = this.extra.dividends + ((((amount / 100) * 7) * this.yourPowPersentage) / 100)
        
        /*Alice calculation Only*/
-        if (ref) {
+        if (ref && this.alice.pow > 9999) {
           this.alice.refs = this.alice.refs + ((amount / 100) * 3)
         }
     },
