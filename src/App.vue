@@ -123,26 +123,32 @@
   <br>
   <el-row :gutter="20">
     <el-form>
-    <el-col :span="6">
-      <el-form-item label="Enter Friends Amount">
-      <el-input-number v-model.number="alice.friends" placeholder="Enter Friends Amount" :min="1" :max="100"></el-input-number>
+    <el-col >
+      <el-form-item label="Alice Friends">
+      <el-input-number v-model.number="alice.friends" placeholder="Enter Friends Quantity" :min="1" :max="100"></el-input-number>
       </el-form-item>
     </el-col>
-    <el-col :span="6">
-      <el-form-item label="Enter Friend min Deposit">
-      <el-input-number v-model.number="alice.min" placeholder="Enter Friend min Deposit" :min="100" :max="1000"></el-input-number>
+     <el-col >
+      <el-form-item label="Strangers">
+      <el-input-number v-model.number="alice.strangers" placeholder="strangers" :min="1" :max="100"></el-input-number>
       </el-form-item>
     </el-col>
-    <el-col :span="6">
-      <el-form-item label="Enter Friend max Depost">
-      <el-input-number v-model.number="alice.max" placeholder="Enter Friend max Depost" :min="1000" :max="10000"></el-input-number>
+    <el-col >
+      <el-form-item label="User min Deposit">
+      <el-input-number v-model.number="alice.min" placeholder="User min Deposit" :min="100" :max="1000"></el-input-number>
       </el-form-item>
     </el-col>
-    <el-col :span="6">
+    <el-col >
+      <el-form-item label="User Friend max Depost">
+      <el-input-number v-model.number="alice.max" placeholder="User max Depost" :min="1000" :max="10000"></el-input-number>
+      </el-form-item>
+    </el-col>
+    <el-col >
       <el-form-item label="Alice Amount">
        <el-input-number v-model.number="alice.amount" placeholder="Alice Amount"></el-input-number>
       </el-form-item>
     </el-col>
+    
     </el-form>
   </el-row>
   <br>
@@ -158,21 +164,47 @@
         <div slot="header" class="clearfix">
           Alice
         </div>
-        <h4 v-if="alice.pow">Alice bought <strong>{{alice.pow.toFixed(0)}}</strong>POW for <strong>{{alice.amount}}</strong>EOS and the price was <strong>{{alice.price}}</strong></h4>
+        <h4 v-if="alice.pow">Alice bought <strong>{{alice.pow.toFixed(5)}}</strong>POW for <strong>{{alice.amount}}</strong>EOS and the price was <strong>{{alice.price}}</strong></h4>
         <p v-if="alice.persantage">Alice participation is {{alice.persantage}}%</p>
-        <p v-if="alice.refs">Alice referals bonus is {{alice.refs.toFixed(0)}}EOS</p>
-        <p v-if="alice.dividends">Alice dividends is {{alice.dividends.toFixed(0)}}EOS</p>
+        <p v-if="alice.refs">Alice referals bonus is {{alice.refs.toFixed(5)}}EOS</p>
+        <p v-if="alice.dividends">Alice dividends is {{alice.dividends.toFixed(5)}}EOS</p>
         <p v-if="alice.pow">Alice can sell her <strong>{{alice.pow.toFixed(0)}}</strong>POW for {{this.price.sell}} price and get  {{alice.pow * this.price.sell}}EOS</p>
         <p v-if="alice.pow">At the end Alice will own {{(alice.pow * this.price.sell) + alice.refs + alice.dividends}}EOS</p>
 
       </el-card>
     </el-col>
   </el-row>
-  <el-row v-if="showFriendsDep">
-    <el-col>
+  <el-row >
+    <el-col :span="12">
+      <h4>Alice's Friends</h4>
        <el-table
       :data="friends"
       style="width: 100%">
+      <el-table-column
+      type="index"
+      width="50">
+    </el-table-column>
+      <el-table-column
+        prop="name"
+        label="Name"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="amount"
+        label="Amount (EOS)"
+        width="180">
+      </el-table-column>
+    </el-table>
+    </el-col>
+     <el-col :span="12">
+       <h4>Strangers</h4>
+       <el-table
+      :data="strangers"
+      style="width: 100%">
+      <el-table-column
+      type="index"
+      width="50">
+    </el-table-column>
       <el-table-column
         prop="name"
         label="Name"
@@ -215,6 +247,7 @@ export default {
     return {
       alice: {
         friends: 10,
+        strangers: 100,
         min: 100,
         max: 1000,
         amout: 0,
@@ -225,6 +258,7 @@ export default {
         persantage: 0
       },
       friend: [],
+      strangers:[],
       price: {
         buy: null,
         sell: null,
@@ -269,12 +303,13 @@ export default {
       return Math.floor(Math.random() * (max - min) ) + min;
     },
 
-    prepareAliceFriendsArray (alice) {
+    prepareAliceFriendsArray (alice, refs) {
       let friendsArr = []
       let index = 0
-      while (index < alice.friends) {
+      let length = refs ? alice.friends : alice.strangers
+      while (index < length) {
         friendsArr.push({
-          isRef: true,
+          isRef: refs,
           name: RANDOM_NAMES[index],
           amount: this.getRndInteger(alice.min, alice.max)
         })
@@ -298,12 +333,14 @@ export default {
     },
 
     async linkFriends(alice) {
-      this.friends = await this.prepareAliceFriendsArray(alice)
+      this.friends = await this.prepareAliceFriendsArray(alice, true)
+      this.strangers = await this.prepareAliceFriendsArray(alice, false)
       /*alive bought*/
       this.alice.price = this.price.buy
       this.alice.pow = this.alice.amount / this.price.buy
       this.recalculateAmounts(alice.amount)
       this.calculateAlicesFriendsTransactions(this.friends)
+      this.calculateAlicesFriendsTransactions(this.strangers)
       this.showFriendsDep = true
     },
 
