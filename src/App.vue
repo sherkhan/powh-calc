@@ -139,7 +139,7 @@
       </el-form-item>
     </el-col>
     <el-col >
-      <el-form-item label="User Friend max Depost">
+      <el-form-item label="User max Depost">
       <el-input-number v-model.number="alice.max" placeholder="User max Depost" :min="1000" :max="10000"></el-input-number>
       </el-form-item>
     </el-col>
@@ -257,7 +257,7 @@ export default {
         dividends: 0,
         persantage: 0
       },
-      friend: [],
+      friends: [],
       strangers:[],
       price: {
         buy: null,
